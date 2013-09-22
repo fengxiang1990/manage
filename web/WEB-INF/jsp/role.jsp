@@ -18,7 +18,8 @@
         <script>
             $("#tt").datagrid({
                 onClickRow: function(index, data) {
-                    console.log(index + " " + data.name);
+                    console.log(index + " " + data.name+" "+data.id);
+                    $("#rid").val(data.id);
                     //selectRow(index);
                 },
                 onSelect: function(index, data) {
@@ -65,6 +66,7 @@
                     }
                 });
             }
+             
               function  loadRsWinow(){
               $('#rsdiv').dialog({
                     title: '角色授权',
@@ -72,7 +74,8 @@
                     height: 500,
                     closed: false,
                     cache: false,
-                    modal: true
+                    modal: true,
+                    href:"./rstree.interface?rid="+$("#rid").val()+""
                 });
             }
              $("#rstree").tree(
@@ -84,9 +87,15 @@
                 );
              function modifyRs(){
                  var nodes = $("#rstree").tree("getChecked");
+                 var mids = new Array();
                  for(var i=0;i<nodes.length;i++){
                      console.log(nodes[i].id+" "+nodes[i].text);
+                     mids.push(nodes[i].id);
                  }
+                 var mids_val = mids.toString();
+                 $.post("./addRs.interface",{rids:$("#rid").val(),mids:mids_val},function(data){
+                     console.log(data);
+                 });
              }
         </script>
     </head>
@@ -121,10 +130,12 @@
             </center>
         </div>
         <div id="rsdiv" class="easyui-dialog" data-options='closed:true'>
-            <ul id='rstree' class='easyui-tree' data-options="url:'./tree.interface',checkbox:true,cascadeCheck:false"></ul>
+        
+         <!--   <ul id='rstree' class='easyui-tree' data-options="url:'./tree.interface',checkbox:true,cascadeCheck:false"></ul>
             <div style="margin-top:20px;margin-left: 20px">
                         <input class="easyui-button" type="button" value="确定" onclick="javascript:modifyRs()"/>
              </div>
+            --> 
         </div>
     </body>
 </html>

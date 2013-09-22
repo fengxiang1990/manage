@@ -84,4 +84,16 @@ public class MenuService {
        String sql  = "insert into role(name) values(?)";
        return this.menuDao.addRole(sql,name);
     }
+
+    public boolean isSmenuInRoll(int id, String rid) {
+         String sql = "select sid from rs where rid=?";
+         List<String> sids = this.menuDao.getSids(sql,rid);
+         boolean flag = false;
+         for(String sid:sids){
+               if(id == Integer.parseInt(sid)){
+               flag = true;
+          }
+        } 
+        return flag;
+    }
 }

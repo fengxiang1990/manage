@@ -199,4 +199,26 @@ public class MenuDao extends BaseDao{
            return false;
        }       
     }
+
+    public List<String> getSids(String sql, String rid) {
+        List<String> data = null;
+       try{
+        data = new ArrayList<String>();
+       this.dbConnection = DataAccess.getConnection();
+       this.pstm  = dbConnection.prepareStatement(sql);
+       this.pstm.setInt(1,Integer.parseInt(rid));
+       this.rs =  this.pstm.executeQuery();
+       while(rs.next()){
+           String sid = rs.getString("sid");
+           data.add(sid);
+       }
+       }catch(Exception e){
+            try {
+               this.dbConnection.close();
+           } catch (SQLException ex) {
+               Logger.getLogger(MenuDao.class.getName()).log(Level.SEVERE, null, ex);
+           }
+       }       
+       return data;
+    }
 }

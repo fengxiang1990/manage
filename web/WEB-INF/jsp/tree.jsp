@@ -17,6 +17,6 @@
 	<script type="text/javascript" src="./js/jquery.easyui.min.js"></script>
     </head>
     <body>
-        <ul di='tree' name='tree' class='easyui-tree' data-options="url:'./tree.interface'"></ul>
+        <ul id='tree' name='tree' class='easyui-tree' data-options="url:'./tree.interface'"></ul>
     </body>
 </html>

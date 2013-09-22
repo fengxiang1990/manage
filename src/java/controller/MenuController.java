@@ -17,8 +17,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import service.MenuService;
 import util.SingletonMap;
@@ -97,7 +99,7 @@ public class MenuController {
     }
     
     @RequestMapping("/tree.interface")
-    public void initTree(HttpServletResponse response,HttpServletRequest request) {
+    public void initTree(HttpServletResponse response,HttpServletRequest request,String rid) {
         try {
             response.setContentType("application/json;charset=utf-8");
             PrintWriter out = response.getWriter();
@@ -118,11 +120,16 @@ public class MenuController {
             List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
             Map map;
             for (Smenu s :data){
-                System.out.println("first:"+s.getName());
+               System.out.println("first:"+s.getName());
                map = new HashMap<String,Object>();
                map.put("id",s.getId());
                map.put("text",s.getName());
                map.put("state","closed");
+               //判断 菜单 是否 已经授权给 所选 角色
+               if(StringUtils.isNotBlank(rid)){
+                   boolean ischeckedornot = this.menuService.isSmenuInRoll(s.getId(),rid);
+                    map.put("checked",ischeckedornot);
+               }
                List<Map<String,Object>> childlist = new ArrayList<Map<String,Object>>();
                Map<String,Object> childmap=null;
                if(this.menuService.hasChildren(s.getId())){
@@ -132,6 +139,10 @@ public class MenuController {
                       System.out.println(sc.getName());
                       childmap.put("id",sc.getId());
                       childmap.put("text",sc.getName());
+                       if(StringUtils.isNotBlank(rid)){
+                       boolean ischeckedornot = this.menuService.isSmenuInRoll(sc.getId(),rid);
+                       childmap.put("checked",ischeckedornot);
+                      }
                  /* *   if(this.menuService.hasChildren(sc.getId())){
                           childmap.put("state","closed"); 
                       }else{
@@ -248,5 +259,32 @@ public class MenuController {
          }catch(Exception e){
          e.printStackTrace();
          }
+    }
+    
+    
+     /**
+     *
+     * @param response
+     * @param request
+     */
+    @RequestMapping("/addRs.interface")
+    public void addRs(HttpServletResponse response,HttpServletRequest request,String rids,String mids) {
+         response.setContentType("application/json;charset=utf-8");
+         JSONObject json= null;
+         try {
+            PrintWriter out = response.getWriter();
+            json = new JSONObject();
+           // json.put("success",flag);
+           // json.put("message","Message sent successfully");
+            out.print(json);
+         }catch(Exception e){
+         e.printStackTrace();
+         }
+    }
+    
+    @RequestMapping("/rstree.interface")
+    public String rstree(String rid,Model mod){
+        mod.addAttribute("rid",rid);
+        return "rstree";
     }
 }
